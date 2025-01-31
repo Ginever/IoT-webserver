@@ -6,6 +6,8 @@ const { getClient } = require("./get-client");
 
 app.locals.client = null;
 
+app.set("view engine", "ejs");
+
 // Handling GET / request
 app.use("/", async (req, res, next) => {
   const jsonResponse = (responseObject, responseCode = 200) => {
@@ -19,13 +21,15 @@ app.use("/", async (req, res, next) => {
         console.error(err);
         return;
       }
-      res.send(jsonResponse(result));
+
+      const depth = result[0].depth;
+      res.render("index", { data: { depth } }); //end the response
     }
   );
 });
 
 // Server setup
-app.listen(3000, async () => {
+app.listen(process.env.PORT || 3001, async () => {
   console.log("Server is Running");
   app.locals.client = await getClient();
   app.locals.client.query("use lora");
