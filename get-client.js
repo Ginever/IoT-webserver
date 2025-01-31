@@ -1,15 +1,18 @@
-const { Client } = require('pg');
-require('dotenv').config();
+var mysql = require("mysql");
+require("dotenv").config();
 
 module.exports.getClient = async () => {
-  const client = new Client({
-    host: process.env.PG_HOST,
-    port: process.env.PG_PORT,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
+  const con = mysql.createConnection({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
     database: process.env.PG_DATABASE,
-    ssl: false,
   });
-  await client.connect();
-  return client;
+  await con.connect((err) => {
+    if (err) {
+      console.error("Error connecting: " + err);
+    }
+  });
+  return con;
 };
