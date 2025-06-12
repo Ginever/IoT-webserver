@@ -29,8 +29,8 @@ app.use("/", async (req, res, next) => {
 });
 
 // Server setup
-app.listen(process.env.PORT || 3001, async () => {
-  console.log("Server is Running");
+app.listen(process.env.PORT || 3000, async () => {
+  console.log("Server is Running on port", process.env.PORT || 3000);
   app.locals.client = await getClient();
   app.locals.client.query("use lora");
 });
