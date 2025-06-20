@@ -1,8 +1,32 @@
 const express = require("express");
 const app = express();
-const { getClient } = require("./get-client");
+const db= require("./get-client");
 
 // This is our main function which handles serving HTTP requests
+const { SerialPort } = require('serialport');
+
+const port = new SerialPort({ path: '/dev/ttyUSB0', baudRate: 9600 });
+// Read the port data
+port.on("open", () => {
+  console.log('serial port open');
+});
+
+port.on("data", (d) => {
+  const [data , rssi] = d.toString().split("::").map((s,i) => i === 0 ? s.split(":") : s);
+  console.log('Data received: ' + data);
+  console.log('RSSI: ' + rssi);
+
+
+  db.query(
+    "INSERT INTO waterdepth (sensor1, sensor2, sensor3) VALUES (?, ?, ?);", [data[0], data[1], data[2]],
+    function (err, result) {
+      if (err) {
+        console.error(err);
+      }
+      console.log("Data inserted successfully");
+    }
+  );
+});
 
 app.locals.client = null;
 
@@ -14,15 +38,15 @@ app.use("/", async (req, res, next) => {
     res.writeHead(responseCode, { "Content-Type": "application/json" });
     res.end(JSON.stringify(responseObject));
   };
-  const entries = await app.locals.client.query(
-    "SELECT * FROM waterdepth ORDER BY dt DESC LIMIT 1;",
+  db.query(
+    "SELECT * FROM waterdepth ORDER BY time DESC LIMIT 1;",
     function (err, result, fields) {
       if (err) {
         console.error(err);
         return;
       }
 
-      const depth = result[0].depth;
+      const depth = result[0].sensor1;
       res.render("index", { data: { depth } }); //end the response
     }
   );
@@ -31,6 +55,6 @@ app.use("/", async (req, res, next) => {
 // Server setup
 app.listen(process.env.PORT || 3000, async () => {
   console.log("Server is Running on port", process.env.PORT || 3000);
-  app.locals.client = await getClient();
-  app.locals.client.query("use lora");
+  // app.locals.client = await getClient();
+  // app.locals.client.query("use lora");
 });
