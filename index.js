@@ -28,7 +28,7 @@ port.on("data", (d) => {
   );
 });
 
-app.locals.client = null;
+app.use(express.static('public'));
 
 app.set("view engine", "ejs");
 
@@ -46,8 +46,8 @@ app.use("/", async (req, res, next) => {
         return;
       }
 
-      const depth = result[0].sensor1;
-      res.render("index", { data: { depth } }); //end the response
+      const depth = [result[0].sensor1, result[0].sensor2, result[0].sensor3];
+      res.render("index", { depth }); //end the response
     }
   );
 });
@@ -55,6 +55,4 @@ app.use("/", async (req, res, next) => {
 // Server setup
 app.listen(process.env.PORT || 3000, async () => {
   console.log("Server is Running on port", process.env.PORT || 3000);
-  // app.locals.client = await getClient();
-  // app.locals.client.query("use lora");
 });

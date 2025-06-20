@@ -6,15 +6,138 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="/styles.css">
     <title>Water Depth</title>
+
+    <script src="rgraph/RGraph.common.core.js"></script>
+    <script src="rgraph/RGraph.common.key.js"></script>
+    <script src="rgraph/RGraph.common.dynamic.js"></script>
+    <script src="rgraph/RGraph.common.tooltips.js"></script>
+    <script src="rgraph/RGraph.vprogress.js"></script>
 </head>
 
 <body>
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
         <h1 style="color: blue;">Water Tank Depth</h1>
-        <h3>This is great now it kind of works!!!</h3>
-        <p>Depth: <%= data.depth %>
-        </p>
+        <div class="center-items">
+            <div>
+                <p class="graph-header">Tank 1</p>
+                <canvas id="sensor1" width="120" height="400" style="cursor: default;">[No canvas support]</canvas>
+                <p class="graph-text">
+                    <%= depth[0] %> cm
+                </p>
+            </div>
+            <div>
+                <p class="graph-header">Tank 2</p>
+                <canvas id="sensor2" width="120" height="400" style="cursor: default;">[No canvas support]</canvas>
+                <p class="graph-text">
+                    <%= depth[1] %> cm
+                </p>
+            </div>
+            <div>
+                <p class="graph-header">Tank 3</p>
+                <canvas id="sensor3" width="120" height="400" style="cursor: default;">[No canvas support]</canvas>
+                <p class="graph-text">
+                    <%= depth[2] %> cm
+                </p>
+            </div>
+        </div>
+
     </div>
 </body>
+
+<style>
+    .center-items {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .graph-text {
+        text-align: center;
+        font-size: 1.2em;
+        margin: 0%;
+    }
+
+    .graph-header {
+        text-align: center;
+        font-size: 1.5em;
+        margin: 0%;
+    }
+</style>
+
+<script>
+    const depth = <%= JSON.stringify(depth) %>;
+
+    new RGraph.VProgress({
+        id: 'sensor1',
+        min: 0,
+        max: 700,
+        value: [depth[0]],
+        options: {
+            marginLeft: 40,
+            tooltips: '%{property:key[%{index}]} %{value}',
+            colors: ['blue'],
+            marginRight: 40
+        }
+    }).exec(function (obj) {
+        var background = RGraph.linearGradient({
+            object: obj,
+            x1: 25, y1: 0, x2: obj.canvas.width - 25, y2: 0,
+            colors: ['#ccc', 'white', 'white', 'white']
+        });
+
+        obj.set({
+            colorsBackground: background
+        });
+    }).grow();
+
+
+    new RGraph.VProgress({
+        id: 'sensor2',
+        min: 0,
+        max: 700,
+        value: [depth[1]],
+        options: {
+            margin: 40,
+            tooltips: '%{property:key[%{index}]} %{value}',
+            colors: ['blue'],
+            marginRight: 40
+        }
+    }).exec(function (obj) {
+        var background = RGraph.linearGradient({
+            object: obj,
+            x1: 25, y1: 0, x2: obj.canvas.width - 25, y2: 0,
+            colors: ['#ccc', 'white', 'white', 'white']
+        });
+
+        obj.set({
+            colorsBackground: background
+        });
+    }).grow();
+
+    new RGraph.VProgress({
+        id: 'sensor3',
+        min: 0,
+        max: 700,
+        value: [depth[2]],
+        options: {
+            margin: 40,
+            tooltips: '%{property:key[%{index}]} %{value}',
+            colors: ['blue'],
+            marginRight: 40
+        }
+    }).exec(function (obj) {
+        var background = RGraph.linearGradient({
+            object: obj,
+            x1: 25, y1: 0, x2: obj.canvas.width - 25, y2: 0,
+            colors: ['#ccc', 'white', 'white', 'white']
+        });
+
+        obj.set({
+            colorsBackground: background
+        });
+    }).grow();
+</script>
 
 </html>
